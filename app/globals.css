@@ -1,0 +1,291 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  /* Light mode palette */
+  --background: #faf3f5;
+  --foreground: #5d3c64;
+  --card: #ffeaf2;
+  --card-foreground: #5d3c64;
+  --popover: #ffeaf2;
+  --popover-foreground: #5d3c64;
+  --primary: #9f6496;
+  --primary-foreground: #faf3f5;
+  --secondary: #d391b0;
+  --secondary-foreground: #5d3c64;
+  --muted: #ffeaf2;
+  --muted-foreground: #9f6496;
+  --accent: #d391b0;
+  --accent-foreground: #5d3c64;
+  --destructive: #dc2626;
+  --destructive-foreground: #faf3f5;
+  --border: #d391b0;
+  --input: #ffeaf2;
+  --ring: #9f6496;
+  --chart-1: #9f6496;
+  --chart-2: #d391b0;
+  --chart-3: #ba6e8f;
+  --chart-4: #7b466a;
+  --chart-5: #5d3c64;
+  --radius: 0.625rem;
+  --sidebar: #ffeaf2;
+  --sidebar-foreground: #5d3c64;
+  --sidebar-primary: #9f6496;
+  --sidebar-primary-foreground: #faf3f5;
+  --sidebar-accent: #d391b0;
+  --sidebar-accent-foreground: #5d3c64;
+  --sidebar-border: #d391b0;
+  --sidebar-ring: #9f6496;
+
+  /* Light mode hero gradient */
+  --hero-gradient-start: rgba(159, 100, 150, 0.8);
+  --hero-gradient-end: rgba(211, 145, 176, 0.9);
+}
+
+.dark {
+  /* Dark mode palette */
+  --background: #0c0420;
+  --foreground: #d391b0;
+  --card: #5d3c64;
+  --card-foreground: #d391b0;
+  --popover: #5d3c64;
+  --popover-foreground: #d391b0;
+  --primary: #ba6e8f;
+  --primary-foreground: #0c0420;
+  --secondary: #7b466a;
+  --secondary-foreground: #d391b0;
+  --muted: #5d3c64;
+  --muted-foreground: #ba6e8f;
+  --accent: #ba6e8f;
+  --accent-foreground: #0c0420;
+  --destructive: #ef4444;
+  --destructive-foreground: #d391b0;
+  --border: #7b466a;
+  --input: #5d3c64;
+  --ring: #ba6e8f;
+  --chart-1: #ba6e8f;
+  --chart-2: #d391b0;
+  --chart-3: #9f6496;
+  --chart-4: #7b466a;
+  --chart-5: #5d3c64;
+  --sidebar: #5d3c64;
+  --sidebar-foreground: #d391b0;
+  --sidebar-primary: #ba6e8f;
+  --sidebar-primary-foreground: #0c0420;
+  --sidebar-accent: #7b466a;
+  --sidebar-accent-foreground: #d391b0;
+  --sidebar-border: #7b466a;
+  --sidebar-ring: #ba6e8f;
+
+  /* Dark mode hero gradient */
+  --hero-gradient-start: rgba(12, 4, 32, 0.85);
+  --hero-gradient-end: rgba(93, 60, 100, 0.8);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-muted;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-muted-foreground/30 rounded-full;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-muted-foreground/50;
+}
+
+/* Hero background image styles */
+.hero-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  z-index: -2;
+}
+
+.hero-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+      135deg,
+      rgba(12, 4, 32, 0.7) 0%,
+      rgba(93, 60, 100, 0.6) 25%,
+      rgba(123, 70, 106, 0.5) 50%,
+      rgba(159, 100, 150, 0.6) 75%,
+      rgba(186, 110, 143, 0.7) 100%
+    ), radial-gradient(ellipse at center, rgba(0, 0, 0, 0.3) 0%, rgba(0, 0, 0, 0.6) 100%);
+  z-index: -1;
+}
+
+/* Enhanced overlay for better text contrast in light mode */
+.light .hero-overlay {
+  background: linear-gradient(
+      135deg,
+      rgba(159, 100, 150, 0.8) 0%,
+      rgba(186, 110, 143, 0.7) 25%,
+      rgba(211, 145, 176, 0.6) 50%,
+      rgba(159, 100, 150, 0.7) 75%,
+      rgba(93, 60, 100, 0.8) 100%
+    ), radial-gradient(ellipse at center, rgba(0, 0, 0, 0.2) 0%, rgba(0, 0, 0, 0.5) 100%);
+}
+
+/* Dark mode overlay for better contrast */
+.dark .hero-overlay {
+  background: linear-gradient(
+      135deg,
+      rgba(12, 4, 32, 0.85) 0%,
+      rgba(93, 60, 100, 0.75) 25%,
+      rgba(123, 70, 106, 0.65) 50%,
+      rgba(93, 60, 100, 0.75) 75%,
+      rgba(12, 4, 32, 0.85) 100%
+    ), radial-gradient(ellipse at center, rgba(0, 0, 0, 0.4) 0%, rgba(0, 0, 0, 0.7) 100%);
+}
+
+/* Responsive background positioning */
+@media (max-width: 768px) {
+  .hero-background {
+    background-position: center center;
+  }
+
+  .hero-overlay {
+    background: linear-gradient(
+        135deg,
+        rgba(12, 4, 32, 0.8) 0%,
+        rgba(93, 60, 100, 0.75) 25%,
+        rgba(123, 70, 106, 0.7) 50%,
+        rgba(159, 100, 150, 0.75) 75%,
+        rgba(186, 110, 143, 0.8) 100%
+      ), radial-gradient(ellipse at center, rgba(0, 0, 0, 0.5) 0%, rgba(0, 0, 0, 0.75) 100%);
+  }
+
+  /* Enhanced mobile overlay for light mode */
+  .light .hero-overlay {
+    background: linear-gradient(
+        135deg,
+        rgba(159, 100, 150, 0.85) 0%,
+        rgba(186, 110, 143, 0.8) 25%,
+        rgba(211, 145, 176, 0.75) 50%,
+        rgba(159, 100, 150, 0.8) 75%,
+        rgba(93, 60, 100, 0.85) 100%
+      ), radial-gradient(ellipse at center, rgba(0, 0, 0, 0.3) 0%, rgba(0, 0, 0, 0.6) 100%);
+  }
+
+  /* Enhanced mobile overlay for dark mode */
+  .dark .hero-overlay {
+    background: linear-gradient(
+        135deg,
+        rgba(12, 4, 32, 0.9) 0%,
+        rgba(93, 60, 100, 0.85) 25%,
+        rgba(123, 70, 106, 0.8) 50%,
+        rgba(93, 60, 100, 0.85) 75%,
+        rgba(12, 4, 32, 0.9) 100%
+      ), radial-gradient(ellipse at center, rgba(0, 0, 0, 0.5) 0%, rgba(0, 0, 0, 0.8) 100%);
+  }
+}
+
+@media (min-width: 769px) {
+  .hero-background {
+    background-position: center center;
+    background-attachment: fixed;
+  }
+}
+
+/* Extra small mobile devices (phones in portrait) */
+@media (max-width: 480px) {
+  .hero-overlay {
+    background: linear-gradient(
+        135deg,
+        rgba(12, 4, 32, 0.85) 0%,
+        rgba(93, 60, 100, 0.8) 25%,
+        rgba(123, 70, 106, 0.75) 50%,
+        rgba(159, 100, 150, 0.8) 75%,
+        rgba(186, 110, 143, 0.85) 100%
+      ), radial-gradient(ellipse at center, rgba(0, 0, 0, 0.6) 0%, rgba(0, 0, 0, 0.8) 100%);
+  }
+
+  /* Extra small mobile - light mode */
+  .light .hero-overlay {
+    background: linear-gradient(
+        135deg,
+        rgba(159, 100, 150, 0.9) 0%,
+        rgba(186, 110, 143, 0.85) 25%,
+        rgba(211, 145, 176, 0.8) 50%,
+        rgba(159, 100, 150, 0.85) 75%,
+        rgba(93, 60, 100, 0.9) 100%
+      ), radial-gradient(ellipse at center, rgba(0, 0, 0, 0.4) 0%, rgba(0, 0, 0, 0.7) 100%);
+  }
+
+  /* Extra small mobile - dark mode */
+  .dark .hero-overlay {
+    background: linear-gradient(
+        135deg,
+        rgba(12, 4, 32, 0.95) 0%,
+        rgba(93, 60, 100, 0.9) 25%,
+        rgba(123, 70, 106, 0.85) 50%,
+        rgba(93, 60, 100, 0.9) 75%,
+        rgba(12, 4, 32, 0.95) 100%
+      ), radial-gradient(ellipse at center, rgba(0, 0, 0, 0.6) 0%, rgba(0, 0, 0, 0.85) 100%);
+  }
+}
