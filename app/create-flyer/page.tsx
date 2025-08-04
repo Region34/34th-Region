@@ -1,7 +1,6 @@
 "use client"
 
 import type React from "react"
-
 import { useState, useEffect, useRef } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -14,6 +13,7 @@ import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { ThemeProvider } from "@/components/theme-provider"
+import { Navbar, Footer } from "@/app/page"
 import {
   Upload,
   Wand2,
@@ -27,16 +27,12 @@ import {
   Edit,
   Clock,
   Trash2,
-  Church,
-  Moon,
-  Sun,
-  Menu,
-  X,
+  ArrowLeft,
   Facebook,
   Twitter,
   Instagram,
+  Mail,
 } from "lucide-react"
-import { useTheme } from "next-themes"
 import Link from "next/link"
 
 // Types
@@ -62,102 +58,111 @@ interface FlyerData {
   lastModified: Date
 }
 
-// Navbar Component (reused from homepage)
-function Navbar() {
-  const [isOpen, setIsOpen] = useState(false)
-  const { theme, setTheme } = useTheme()
+// Share Dialog Component
+function ShareDialog({ isOpen, onClose, flyer }: { isOpen: boolean; onClose: () => void; flyer?: FlyerData }) {
+  const shareOptions = [
+    { name: "Facebook", icon: Facebook, color: "text-blue-600" },
+    { name: "Twitter", icon: Twitter, color: "text-sky-500" },
+    { name: "Instagram", icon: Instagram, color: "text-pink-600" },
+    { name: "Email", icon: Mail, color: "text-gray-600" },
+  ]
 
   return (
-    <nav className="sticky top-0 z-50 w-full border-b border-border bg-background/98 backdrop-blur-md supports-[backdrop-filter]:bg-background/95 shadow-sm">
-      <div className="container flex h-16 items-center justify-between px-4">
-        <Link href="/" className="flex items-center space-x-2">
-          <Church className="h-8 w-8 text-primary drop-shadow-sm" />
-          <span className="text-xl font-bold text-foreground">34th Region</span>
-        </Link>
-
-        {/* Desktop Navigation */}
-        <div className="hidden md:flex items-center space-x-6">
-          <Link
-            href="/"
-            className="text-sm font-medium text-foreground hover:text-primary transition-colors duration-200"
-          >
-            Home
-          </Link>
-          <Link
-            href="#"
-            className="text-sm font-medium text-foreground hover:text-primary transition-colors duration-200"
-          >
-            About
-          </Link>
-          <Link
-            href="#"
-            className="text-sm font-medium text-foreground hover:text-primary transition-colors duration-200"
-          >
-            Tools
-          </Link>
-          <Link
-            href="#"
-            className="text-sm font-medium text-foreground hover:text-primary transition-colors duration-200"
-          >
-            Login
-          </Link>
-          <Button
-            variant="outline"
-            size="sm"
-            className="border-primary/50 text-primary hover:bg-primary hover:text-primary-foreground bg-transparent"
-          >
-            Register
-          </Button>
-          <Button variant="ghost" size="icon" onClick={() => setTheme(theme === "light" ? "dark" : "light")}>
-            <Sun className="h-4 w-4 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
-            <Moon className="absolute h-4 w-4 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
-          </Button>
-        </div>
-
-        {/* Mobile Navigation */}
-        <div className="md:hidden flex items-center space-x-2">
-          <Button variant="ghost" size="icon" onClick={() => setTheme(theme === "light" ? "dark" : "light")}>
-            <Sun className="h-4 w-4 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
-            <Moon className="absolute h-4 w-4 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
-          </Button>
-          <Button variant="ghost" size="icon" onClick={() => setIsOpen(!isOpen)}>
-            {isOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
-          </Button>
-        </div>
-      </div>
-
-      {/* Mobile Menu */}
-      {isOpen && (
-        <div className="md:hidden border-t bg-background">
-          <div className="container py-4 space-y-3">
-            <Link href="/" className="block text-sm font-medium hover:text-primary transition-colors">
-              Home
-            </Link>
-            <Link href="#" className="block text-sm font-medium hover:text-primary transition-colors">
-              About
-            </Link>
-            <Link href="#" className="block text-sm font-medium hover:text-primary transition-colors">
-              Tools
-            </Link>
-            <Link href="#" className="block text-sm font-medium hover:text-primary transition-colors">
-              Login
-            </Link>
-            <Button variant="outline" size="sm" className="w-full bg-transparent">
-              Register
-            </Button>
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent className="sm:max-w-md">
+        <DialogHeader>
+          <DialogTitle>Share Your Flyer</DialogTitle>
+        </DialogHeader>
+        <div className="space-y-4">
+          <div className="grid grid-cols-2 gap-4">
+            {shareOptions.map((option) => {
+              const IconComponent = option.icon
+              return (
+                <Button
+                  key={option.name}
+                  variant="outline"
+                  className="flex items-center gap-2 h-12 bg-transparent"
+                  onClick={() => {
+                    // Handle share logic here
+                    console.log(`Sharing to ${option.name}`)
+                    onClose()
+                  }}
+                >
+                  <IconComponent className={`h-5 w-5 ${option.color}`} />
+                  {option.name}
+                </Button>
+              )
+            })}
+          </div>
+          <Separator />
+          <div>
+            <Label htmlFor="share-link">Share Link</Label>
+            <div className="flex gap-2 mt-2">
+              <Input
+                id="share-link"
+                value={`https://34thregion.com/flyer/${flyer?.id || "demo"}`}
+                readOnly
+                className="flex-1"
+              />
+              <Button
+                variant="outline"
+                onClick={() => {
+                  navigator.clipboard.writeText(`https://34thregion.com/flyer/${flyer?.id || "demo"}`)
+                }}
+              >
+                Copy
+              </Button>
+            </div>
           </div>
         </div>
-      )}
-    </nav>
+      </DialogContent>
+    </Dialog>
+  )
+}
+
+// Initial Selection Component
+function InitialSelection({ onSelect }: { onSelect: (type: "upload" | "generate") => void }) {
+  return (
+    <div className="grid md:grid-cols-2 gap-6 mb-12">
+      <Card
+        className="cursor-pointer hover:shadow-lg transition-all duration-300 group"
+        onClick={() => onSelect("upload")}
+      >
+        <CardHeader className="text-center pb-4">
+          <div className="mx-auto mb-4 p-4 rounded-full bg-primary/20 group-hover:bg-primary/30 transition-all duration-300 w-fit">
+            <Upload className="h-8 w-8 text-primary" />
+          </div>
+          <CardTitle className="text-xl mb-2">Upload Your Own Design</CardTitle>
+          <CardDescription>Have a custom design? Upload it and add your event details</CardDescription>
+        </CardHeader>
+      </Card>
+
+      <Card
+        className="cursor-pointer hover:shadow-lg transition-all duration-300 group"
+        onClick={() => onSelect("generate")}
+      >
+        <CardHeader className="text-center pb-4">
+          <div className="mx-auto mb-4 p-4 rounded-full bg-secondary/20 group-hover:bg-secondary/30 transition-all duration-300 w-fit">
+            <Wand2 className="h-8 w-8 text-secondary" />
+          </div>
+          <CardTitle className="text-xl mb-2">Auto-Generate a Flyer</CardTitle>
+          <CardDescription>Use our smart builder to create professional flyers automatically</CardDescription>
+        </CardHeader>
+      </Card>
+    </div>
   )
 }
 
 // Custom Upload Component
-function CustomUploadSection({ onUpload }: { onUpload: (data: Partial<FlyerData>) => void }) {
+function CustomUploadSection({
+  onUpload,
+  onBack,
+}: { onUpload: (data: Partial<FlyerData>) => void; onBack: () => void }) {
   const [customImage, setCustomImage] = useState<string>("")
   const [customName, setCustomName] = useState("")
   const [customSlogan, setCustomSlogan] = useState("")
   const [showPreview, setShowPreview] = useState(false)
+  const [showShare, setShowShare] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -169,10 +174,6 @@ function CustomUploadSection({ onUpload }: { onUpload: (data: Partial<FlyerData>
       }
       reader.readAsDataURL(file)
     }
-  }
-
-  const handlePreview = () => {
-    setShowPreview(true)
   }
 
   const handleSave = () => {
@@ -187,7 +188,6 @@ function CustomUploadSection({ onUpload }: { onUpload: (data: Partial<FlyerData>
       lastModified: new Date(),
     }
     onUpload(flyerData)
-    // Reset form
     setCustomImage("")
     setCustomName("")
     setCustomSlogan("")
@@ -195,110 +195,128 @@ function CustomUploadSection({ onUpload }: { onUpload: (data: Partial<FlyerData>
   }
 
   return (
-    <Card className="w-full">
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Upload className="h-5 w-5" />
-          Upload Your Own Design
-        </CardTitle>
-        <CardDescription>Upload your custom flyer design and add your event details</CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        <div>
-          <Label htmlFor="custom-image">Upload Image</Label>
-          <div className="mt-2">
-            <input
-              ref={fileInputRef}
-              type="file"
-              id="custom-image"
-              accept="image/*"
-              onChange={handleImageUpload}
-              className="hidden"
+    <div className="space-y-6">
+      <div className="flex items-center gap-4 mb-6">
+        <Button variant="outline" onClick={onBack} className="bg-transparent">
+          <ArrowLeft className="h-4 w-4 mr-2" />
+          Go Back
+        </Button>
+        <h2 className="text-2xl font-bold">Upload Your Own Design</h2>
+      </div>
+
+      <Card className="w-full">
+        <CardContent className="pt-6 space-y-4">
+          <div>
+            <Label htmlFor="custom-image">Upload Image</Label>
+            <div className="mt-2">
+              <input
+                ref={fileInputRef}
+                type="file"
+                id="custom-image"
+                accept="image/*"
+                onChange={handleImageUpload}
+                className="hidden"
+              />
+              <Button
+                variant="outline"
+                onClick={() => fileInputRef.current?.click()}
+                className="w-full h-32 border-dashed border-2 hover:border-primary/50 bg-transparent"
+              >
+                {customImage ? (
+                  <img
+                    src={customImage || "/placeholder.svg"}
+                    alt="Preview"
+                    className="max-h-28 max-w-full object-contain"
+                  />
+                ) : (
+                  <div className="flex flex-col items-center gap-2">
+                    <ImageIcon className="h-8 w-8 text-muted-foreground" />
+                    <span className="text-sm text-muted-foreground">Click to upload image</span>
+                  </div>
+                )}
+              </Button>
+            </div>
+          </div>
+
+          <div>
+            <Label htmlFor="custom-name">Event Name</Label>
+            <Input
+              id="custom-name"
+              value={customName}
+              onChange={(e) => setCustomName(e.target.value)}
+              placeholder="Enter event name"
+              className="font-serif text-lg"
             />
+          </div>
+
+          <div>
+            <Label htmlFor="custom-slogan">Event Slogan/Description</Label>
+            <Textarea
+              id="custom-slogan"
+              value={customSlogan}
+              onChange={(e) => setCustomSlogan(e.target.value)}
+              placeholder="Enter event slogan or description"
+              className="min-h-[80px]"
+            />
+          </div>
+
+          <div className="flex gap-2 pt-4">
+            <Button onClick={() => setShowPreview(true)} variant="outline" className="flex-1 bg-transparent">
+              <Eye className="h-4 w-4 mr-2" />
+              Preview
+            </Button>
+            <Button onClick={handleSave} disabled={!customImage || !customName} className="flex-1">
+              <Download className="h-4 w-4 mr-2" />
+              Save & Download
+            </Button>
             <Button
               variant="outline"
-              onClick={() => fileInputRef.current?.click()}
-              className="w-full h-32 border-dashed border-2 hover:border-primary/50"
+              disabled={!customImage || !customName}
+              onClick={() => setShowShare(true)}
+              className="bg-transparent"
             >
-              {customImage ? (
-                <img
-                  src={customImage || "/placeholder.svg"}
-                  alt="Preview"
-                  className="max-h-28 max-w-full object-contain"
-                />
-              ) : (
-                <div className="flex flex-col items-center gap-2">
-                  <ImageIcon className="h-8 w-8 text-muted-foreground" />
-                  <span className="text-sm text-muted-foreground">Click to upload image</span>
-                </div>
-              )}
+              <Share2 className="h-4 w-4 mr-2" />
+              Share
             </Button>
           </div>
-        </div>
 
-        <div>
-          <Label htmlFor="custom-name">Event Name</Label>
-          <Input
-            id="custom-name"
-            value={customName}
-            onChange={(e) => setCustomName(e.target.value)}
-            placeholder="Enter event name"
-            className="font-serif text-lg"
-          />
-        </div>
-
-        <div>
-          <Label htmlFor="custom-slogan">Event Slogan/Description</Label>
-          <Textarea
-            id="custom-slogan"
-            value={customSlogan}
-            onChange={(e) => setCustomSlogan(e.target.value)}
-            placeholder="Enter event slogan or description"
-            className="min-h-[80px]"
-          />
-        </div>
-
-        <div className="flex gap-2 pt-4">
-          <Button onClick={handlePreview} variant="outline" className="flex-1 bg-transparent">
-            <Eye className="h-4 w-4 mr-2" />
-            Preview
-          </Button>
-          <Button onClick={handleSave} disabled={!customImage || !customName} className="flex-1">
-            <Download className="h-4 w-4 mr-2" />
-            Save & Download
-          </Button>
-          <Button variant="outline" disabled={!customImage || !customName}>
-            <Share2 className="h-4 w-4 mr-2" />
-            Share
-          </Button>
-        </div>
-
-        {/* Preview Dialog */}
-        <Dialog open={showPreview} onOpenChange={setShowPreview}>
-          <DialogContent className="max-w-md">
-            <DialogHeader>
-              <DialogTitle>Flyer Preview</DialogTitle>
-            </DialogHeader>
-            <div className="space-y-4">
-              {customImage && (
-                <div className="relative">
-                  <img src={customImage || "/placeholder.svg"} alt="Flyer preview" className="w-full rounded-lg" />
-                  <div className="absolute bottom-4 left-4 right-4 bg-black/70 text-white p-3 rounded">
-                    <h3 className="font-serif text-lg font-bold">{customName}</h3>
-                    {customSlogan && <p className="text-sm mt-1">{customSlogan}</p>}
+          {/* Preview Dialog */}
+          <Dialog open={showPreview} onOpenChange={setShowPreview}>
+            <DialogContent className="max-w-md">
+              <DialogHeader>
+                <DialogTitle>Flyer Preview</DialogTitle>
+              </DialogHeader>
+              <div className="space-y-4">
+                {customImage && (
+                  <div className="relative">
+                    <img src={customImage || "/placeholder.svg"} alt="Flyer preview" className="w-full rounded-lg" />
+                    <div className="absolute bottom-4 left-4 right-4 bg-black/70 text-white p-3 rounded">
+                      <h3 className="font-serif text-lg font-bold">{customName}</h3>
+                      {customSlogan && <p className="text-sm mt-1">{customSlogan}</p>}
+                    </div>
                   </div>
-                </div>
-              )}
-            </div>
-          </DialogContent>
-        </Dialog>
-      </CardContent>
-    </Card>
+                )}
+              </div>
+            </DialogContent>
+          </Dialog>
+
+          {/* Share Dialog */}
+          <ShareDialog
+            isOpen={showShare}
+            onClose={() => setShowShare(false)}
+            flyer={{ id: "demo", customName, customSlogan } as FlyerData}
+          />
+        </CardContent>
+      </Card>
+    </div>
   )
 }
 
 // Auto-Generate Flyer Component
-function AutoGenerateSection({ onGenerate }: { onGenerate: (data: Partial<FlyerData>) => void }) {
+function AutoGenerateSection({
+  onGenerate,
+  onBack,
+}: { onGenerate: (data: Partial<FlyerData>) => void; onBack: () => void }) {
   const [formData, setFormData] = useState({
     title: "",
     date: "",
@@ -314,6 +332,7 @@ function AutoGenerateSection({ onGenerate }: { onGenerate: (data: Partial<FlyerD
   })
   const [backgroundImage, setBackgroundImage] = useState<string>("")
   const [showPreview, setShowPreview] = useState(false)
+  const [showShare, setShowShare] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   const handleInputChange = (field: string, value: string) => {
@@ -331,8 +350,31 @@ function AutoGenerateSection({ onGenerate }: { onGenerate: (data: Partial<FlyerD
     }
   }
 
-  const handlePreview = () => {
-    setShowPreview(true)
+  const handleColorChange = (color: string) => {
+    setFormData((prev) => ({
+      ...prev,
+      backgroundColor: color,
+      backgroundGradient: `linear-gradient(135deg, ${color} 0%, ${adjustColorBrightness(color, 20)} 100%)`,
+    }))
+  }
+
+  const adjustColorBrightness = (hex: string, percent: number) => {
+    const num = Number.parseInt(hex.replace("#", ""), 16)
+    const amt = Math.round(2.55 * percent)
+    const R = (num >> 16) + amt
+    const G = ((num >> 8) & 0x00ff) + amt
+    const B = (num & 0x0000ff) + amt
+    return (
+      "#" +
+      (
+        0x1000000 +
+        (R < 255 ? (R < 1 ? 0 : R) : 255) * 0x10000 +
+        (G < 255 ? (G < 1 ? 0 : G) : 255) * 0x100 +
+        (B < 255 ? (B < 1 ? 0 : B) : 255)
+      )
+        .toString(16)
+        .slice(1)
+    )
   }
 
   const handleSave = () => {
@@ -357,253 +399,274 @@ function AutoGenerateSection({ onGenerate }: { onGenerate: (data: Partial<FlyerD
   ]
 
   return (
-    <Card className="w-full" id="auto-generate">
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Wand2 className="h-5 w-5" />
-          Auto-Generate a Flyer
-        </CardTitle>
-        <CardDescription>Fill in your event details and we'll create a beautiful flyer for you</CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-6">
-        {/* Event Details */}
-        <div className="grid md:grid-cols-2 gap-4">
-          <div>
-            <Label htmlFor="event-title">Event Title *</Label>
-            <Input
-              id="event-title"
-              value={formData.title}
-              onChange={(e) => handleInputChange("title", e.target.value)}
-              placeholder="Sunday Service"
-              className="font-serif text-lg"
-            />
-          </div>
-          <div>
-            <Label htmlFor="venue">Venue *</Label>
-            <Input
-              id="venue"
-              value={formData.venue}
-              onChange={(e) => handleInputChange("venue", e.target.value)}
-              placeholder="Main Sanctuary"
-            />
-          </div>
-        </div>
+    <div className="space-y-6">
+      <div className="flex items-center gap-4 mb-6">
+        <Button variant="outline" onClick={onBack} className="bg-transparent">
+          <ArrowLeft className="h-4 w-4 mr-2" />
+          Go Back
+        </Button>
+        <h2 className="text-2xl font-bold">Auto-Generate a Flyer</h2>
+      </div>
 
-        <div className="grid md:grid-cols-2 gap-4">
-          <div>
-            <Label htmlFor="event-date">Event Date</Label>
-            <Input
-              id="event-date"
-              type="date"
-              value={formData.date}
-              onChange={(e) => handleInputChange("date", e.target.value)}
-            />
-          </div>
-          <div>
-            <Label htmlFor="event-time">Event Time</Label>
-            <Input
-              id="event-time"
-              type="time"
-              value={formData.time}
-              onChange={(e) => handleInputChange("time", e.target.value)}
-            />
-          </div>
-        </div>
-
-        <div className="grid md:grid-cols-2 gap-4">
-          <div>
-            <Label htmlFor="guest-ministers">Guest Minister(s)</Label>
-            <Input
-              id="guest-ministers"
-              value={formData.guestMinisters}
-              onChange={(e) => handleInputChange("guestMinisters", e.target.value)}
-              placeholder="Pastor John Smith"
-            />
-          </div>
-          <div>
-            <Label htmlFor="hosts">Host(s)</Label>
-            <Input
-              id="hosts"
-              value={formData.hosts}
-              onChange={(e) => handleInputChange("hosts", e.target.value)}
-              placeholder="34th Region Church"
-            />
-          </div>
-        </div>
-
-        <div className="grid md:grid-cols-2 gap-4">
-          <div>
-            <Label htmlFor="personal-name">Your Name (Optional)</Label>
-            <Input
-              id="personal-name"
-              value={formData.personalName}
-              onChange={(e) => handleInputChange("personalName", e.target.value)}
-              placeholder="Your name"
-            />
-          </div>
-          <div>
-            <Label htmlFor="layout">Flyer Layout</Label>
-            <Select value={formData.layout} onValueChange={(value) => handleInputChange("layout", value)}>
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="modern">Modern</SelectItem>
-                <SelectItem value="classic">Classic</SelectItem>
-                <SelectItem value="elegant">Elegant</SelectItem>
-                <SelectItem value="bold">Bold</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-        </div>
-
-        <div>
-          <Label htmlFor="personal-message">Personal Message/Quote (Optional)</Label>
-          <Textarea
-            id="personal-message"
-            value={formData.personalMessage}
-            onChange={(e) => handleInputChange("personalMessage", e.target.value)}
-            placeholder="Come and worship with us..."
-            className="min-h-[80px]"
-          />
-        </div>
-
-        {/* Design Options */}
-        <Separator />
-        <div className="space-y-4">
-          <h3 className="text-lg font-semibold flex items-center gap-2">
-            <Palette className="h-5 w-5" />
-            Design Options
-          </h3>
-
-          <div>
-            <Label>Background Image (Optional)</Label>
-            <div className="mt-2">
-              <input ref={fileInputRef} type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />
-              <Button
-                variant="outline"
-                onClick={() => fileInputRef.current?.click()}
-                className="w-full h-24 border-dashed border-2 hover:border-primary/50"
-              >
-                {backgroundImage ? (
-                  <img
-                    src={backgroundImage || "/placeholder.svg"}
-                    alt="Background preview"
-                    className="max-h-20 max-w-full object-contain"
-                  />
-                ) : (
-                  <div className="flex flex-col items-center gap-2">
-                    <ImageIcon className="h-6 w-6 text-muted-foreground" />
-                    <span className="text-sm text-muted-foreground">Upload background image</span>
-                  </div>
-                )}
-              </Button>
-            </div>
-          </div>
-
-          <div>
-            <Label>Background Color</Label>
-            <div className="flex items-center gap-2 mt-2">
-              <input
-                type="color"
-                value={formData.backgroundColor}
-                onChange={(e) => handleInputChange("backgroundColor", e.target.value)}
-                className="w-12 h-10 rounded border border-border"
-              />
+      <Card className="w-full">
+        <CardContent className="pt-6 space-y-6">
+          {/* Event Details */}
+          <div className="grid md:grid-cols-2 gap-4">
+            <div>
+              <Label htmlFor="event-title">Event Title *</Label>
               <Input
-                value={formData.backgroundColor}
-                onChange={(e) => handleInputChange("backgroundColor", e.target.value)}
-                placeholder="#9f6496"
-                className="flex-1"
+                id="event-title"
+                value={formData.title}
+                onChange={(e) => handleInputChange("title", e.target.value)}
+                placeholder="Sunday Service"
+                className="font-serif text-lg"
+              />
+            </div>
+            <div>
+              <Label htmlFor="venue">Venue *</Label>
+              <Input
+                id="venue"
+                value={formData.venue}
+                onChange={(e) => handleInputChange("venue", e.target.value)}
+                placeholder="Main Sanctuary"
               />
             </div>
           </div>
 
-          <div>
-            <Label>Background Gradient</Label>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2 mt-2">
-              {gradientOptions.map((gradient) => (
-                <button
-                  key={gradient.name}
-                  onClick={() => handleInputChange("backgroundGradient", gradient.value)}
-                  className={`h-12 rounded-lg border-2 transition-all ${
-                    formData.backgroundGradient === gradient.value
-                      ? "border-primary ring-2 ring-primary/20"
-                      : "border-border hover:border-primary/50"
-                  }`}
-                  style={{ background: gradient.value }}
-                  title={gradient.name}
-                />
-              ))}
+          <div className="grid md:grid-cols-2 gap-4">
+            <div>
+              <Label htmlFor="event-date">Event Date</Label>
+              <Input
+                id="event-date"
+                type="date"
+                value={formData.date}
+                onChange={(e) => handleInputChange("date", e.target.value)}
+              />
+            </div>
+            <div>
+              <Label htmlFor="event-time">Event Time</Label>
+              <Input
+                id="event-time"
+                type="time"
+                value={formData.time}
+                onChange={(e) => handleInputChange("time", e.target.value)}
+              />
             </div>
           </div>
-        </div>
 
-        {/* Action Buttons */}
-        <div className="flex gap-2 pt-4">
-          <Button
-            onClick={handlePreview}
-            variant="outline"
-            className="flex-1 bg-transparent"
-            disabled={!formData.title}
-          >
-            <Eye className="h-4 w-4 mr-2" />
-            Preview Design
-          </Button>
-          <Button onClick={handleSave} disabled={!formData.title} className="flex-1">
-            <Download className="h-4 w-4 mr-2" />
-            Download Flyer
-          </Button>
-          <Button variant="outline" disabled={!formData.title}>
-            <Share2 className="h-4 w-4 mr-2" />
-            Share Flyer
-          </Button>
-        </div>
+          <div className="grid md:grid-cols-2 gap-4">
+            <div>
+              <Label htmlFor="guest-ministers">Guest Minister(s)</Label>
+              <Input
+                id="guest-ministers"
+                value={formData.guestMinisters}
+                onChange={(e) => handleInputChange("guestMinisters", e.target.value)}
+                placeholder="Pastor John Smith"
+              />
+            </div>
+            <div>
+              <Label htmlFor="hosts">Host(s)</Label>
+              <Input
+                id="hosts"
+                value={formData.hosts}
+                onChange={(e) => handleInputChange("hosts", e.target.value)}
+                placeholder="34th Region Church"
+              />
+            </div>
+          </div>
 
-        {/* Preview Dialog */}
-        <Dialog open={showPreview} onOpenChange={setShowPreview}>
-          <DialogContent className="max-w-md">
-            <DialogHeader>
-              <DialogTitle>Flyer Preview</DialogTitle>
-            </DialogHeader>
-            <div className="space-y-4">
-              <div
-                className="relative w-full h-96 rounded-lg overflow-hidden"
-                style={{
-                  background: backgroundImage ? `url(${backgroundImage}) center/cover` : formData.backgroundGradient,
-                }}
-              >
-                <div className="absolute inset-0 bg-black/20" />
-                <div className="absolute inset-0 p-6 flex flex-col justify-between text-white">
-                  <div className="text-center">
-                    <h1 className="font-serif text-2xl font-bold mb-2">{formData.title}</h1>
-                    {formData.guestMinisters && <p className="text-lg mb-1">with {formData.guestMinisters}</p>}
-                  </div>
+          <div className="grid md:grid-cols-2 gap-4">
+            <div>
+              <Label htmlFor="personal-name">Your Name (Optional)</Label>
+              <Input
+                id="personal-name"
+                value={formData.personalName}
+                onChange={(e) => handleInputChange("personalName", e.target.value)}
+                placeholder="Your name"
+              />
+            </div>
+            <div>
+              <Label htmlFor="layout">Flyer Layout</Label>
+              <Select value={formData.layout} onValueChange={(value) => handleInputChange("layout", value)}>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="modern">Modern</SelectItem>
+                  <SelectItem value="classic">Classic</SelectItem>
+                  <SelectItem value="elegant">Elegant</SelectItem>
+                  <SelectItem value="bold">Bold</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
 
-                  <div className="text-center space-y-2">
-                    {formData.date && (
-                      <p className="flex items-center justify-center gap-2">
-                        <Calendar className="h-4 w-4" />
-                        {new Date(formData.date).toLocaleDateString()}
-                        {formData.time && ` at ${formData.time}`}
-                      </p>
-                    )}
-                    {formData.venue && (
-                      <p className="flex items-center justify-center gap-2">
-                        <MapPin className="h-4 w-4" />
-                        {formData.venue}
-                      </p>
-                    )}
-                    {formData.hosts && <p className="text-sm">Hosted by {formData.hosts}</p>}
-                    {formData.personalMessage && <p className="text-sm italic mt-4">"{formData.personalMessage}"</p>}
+          <div>
+            <Label htmlFor="personal-message">Personal Message/Quote (Optional)</Label>
+            <Textarea
+              id="personal-message"
+              value={formData.personalMessage}
+              onChange={(e) => handleInputChange("personalMessage", e.target.value)}
+              placeholder="Come and worship with us..."
+              className="min-h-[80px]"
+            />
+          </div>
+
+          {/* Design Options */}
+          <Separator />
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold flex items-center gap-2">
+              <Palette className="h-5 w-5" />
+              Design Options
+            </h3>
+
+            <div>
+              <Label>Background Image (Optional)</Label>
+              <div className="mt-2">
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageUpload}
+                  className="hidden"
+                />
+                <Button
+                  variant="outline"
+                  onClick={() => fileInputRef.current?.click()}
+                  className="w-full h-24 border-dashed border-2 hover:border-primary/50 bg-transparent"
+                >
+                  {backgroundImage ? (
+                    <img
+                      src={backgroundImage || "/placeholder.svg"}
+                      alt="Background preview"
+                      className="max-h-20 max-w-full object-contain"
+                    />
+                  ) : (
+                    <div className="flex flex-col items-center gap-2">
+                      <ImageIcon className="h-6 w-6 text-muted-foreground" />
+                      <span className="text-sm text-muted-foreground">Upload background image</span>
+                    </div>
+                  )}
+                </Button>
+              </div>
+            </div>
+
+            <div>
+              <Label>Background Color</Label>
+              <div className="flex items-center gap-2 mt-2">
+                <input
+                  type="color"
+                  value={formData.backgroundColor}
+                  onChange={(e) => handleColorChange(e.target.value)}
+                  className="w-12 h-10 rounded border border-border"
+                />
+                <Input
+                  value={formData.backgroundColor}
+                  onChange={(e) => handleColorChange(e.target.value)}
+                  placeholder="#9f6496"
+                  className="flex-1"
+                />
+              </div>
+            </div>
+
+            <div>
+              <Label>Background Gradient</Label>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2 mt-2">
+                {gradientOptions.map((gradient) => (
+                  <button
+                    key={gradient.name}
+                    onClick={() => handleInputChange("backgroundGradient", gradient.value)}
+                    className={`h-12 rounded-lg border-2 transition-all ${
+                      formData.backgroundGradient === gradient.value
+                        ? "border-primary ring-2 ring-primary/20"
+                        : "border-border hover:border-primary/50"
+                    }`}
+                    style={{ background: gradient.value }}
+                    title={gradient.name}
+                  />
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Action Buttons */}
+          <div className="flex gap-2 pt-4">
+            <Button
+              onClick={() => setShowPreview(true)}
+              variant="outline"
+              className="flex-1 bg-transparent"
+              disabled={!formData.title}
+            >
+              <Eye className="h-4 w-4 mr-2" />
+              Preview Design
+            </Button>
+            <Button onClick={handleSave} disabled={!formData.title} className="flex-1">
+              <Download className="h-4 w-4 mr-2" />
+              Download Flyer
+            </Button>
+            <Button
+              variant="outline"
+              disabled={!formData.title}
+              onClick={() => setShowShare(true)}
+              className="bg-transparent"
+            >
+              <Share2 className="h-4 w-4 mr-2" />
+              Share Flyer
+            </Button>
+          </div>
+
+          {/* Preview Dialog */}
+          <Dialog open={showPreview} onOpenChange={setShowPreview}>
+            <DialogContent className="max-w-md">
+              <DialogHeader>
+                <DialogTitle>Flyer Preview</DialogTitle>
+              </DialogHeader>
+              <div className="space-y-4">
+                <div
+                  className="relative w-full h-96 rounded-lg overflow-hidden"
+                  style={{
+                    background: backgroundImage ? `url(${backgroundImage}) center/cover` : formData.backgroundGradient,
+                  }}
+                >
+                  <div className="absolute inset-0 bg-black/20" />
+                  <div className="absolute inset-0 p-6 flex flex-col justify-between text-white">
+                    <div className="text-center">
+                      <h1 className="font-serif text-2xl font-bold mb-2">{formData.title}</h1>
+                      {formData.guestMinisters && <p className="text-lg mb-1">with {formData.guestMinisters}</p>}
+                    </div>
+
+                    <div className="text-center space-y-2">
+                      {formData.date && (
+                        <p className="flex items-center justify-center gap-2">
+                          <Calendar className="h-4 w-4" />
+                          {new Date(formData.date).toLocaleDateString()}
+                          {formData.time && ` at ${formData.time}`}
+                        </p>
+                      )}
+                      {formData.venue && (
+                        <p className="flex items-center justify-center gap-2">
+                          <MapPin className="h-4 w-4" />
+                          {formData.venue}
+                        </p>
+                      )}
+                      {formData.hosts && <p className="text-sm">Hosted by {formData.hosts}</p>}
+                      {formData.personalMessage && <p className="text-sm italic mt-4">"{formData.personalMessage}"</p>}
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-          </DialogContent>
-        </Dialog>
-      </CardContent>
-    </Card>
+            </DialogContent>
+          </Dialog>
+
+          {/* Share Dialog */}
+          <ShareDialog
+            isOpen={showShare}
+            onClose={() => setShowShare(false)}
+            flyer={{ id: "demo", title: formData.title } as FlyerData}
+          />
+        </CardContent>
+      </Card>
+    </div>
   )
 }
 
@@ -672,7 +735,12 @@ function SavedDesigns({
                       </div>
 
                       <div className="flex gap-2 pt-2">
-                        <Button size="sm" variant="outline" onClick={() => onEdit(flyer)} className="flex-1">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => onEdit(flyer)}
+                          className="flex-1 bg-transparent"
+                        >
                           <Edit className="h-3 w-3 mr-1" />
                           Edit
                         </Button>
@@ -680,7 +748,7 @@ function SavedDesigns({
                           size="sm"
                           variant="outline"
                           onClick={() => onDelete(flyer.id)}
-                          className="text-destructive hover:text-destructive"
+                          className="text-destructive hover:text-destructive bg-transparent"
                         >
                           <Trash2 className="h-3 w-3" />
                         </Button>
@@ -705,40 +773,9 @@ function SavedDesigns({
   )
 }
 
-// Footer Component (reused from homepage)
-function Footer() {
-  return (
-    <footer className="border-t bg-muted/30 py-12 px-4 mt-20">
-      <div className="container max-w-6xl mx-auto">
-        <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-          <div className="flex items-center space-x-2">
-            <Church className="h-6 w-6 text-primary" />
-            <span className="font-semibold">34th Region</span>
-          </div>
-
-          <div className="flex items-center space-x-6">
-            <Button variant="ghost" size="icon">
-              <Facebook className="h-4 w-4" />
-            </Button>
-            <Button variant="ghost" size="icon">
-              <Twitter className="h-4 w-4" />
-            </Button>
-            <Button variant="ghost" size="icon">
-              <Instagram className="h-4 w-4" />
-            </Button>
-          </div>
-        </div>
-
-        <Separator className="my-6" />
-
-        <div className="text-center text-sm text-muted-foreground">© 2025 34th Region. All rights reserved.</div>
-      </div>
-    </footer>
-  )
-}
-
 // Main Flyer Creation Page
 export default function CreateFlyerPage() {
+  const [currentView, setCurrentView] = useState<"initial" | "upload" | "generate">("initial")
   const [savedFlyers, setSavedFlyers] = useState<FlyerData[]>([])
   const [editingFlyer, setEditingFlyer] = useState<FlyerData | null>(null)
 
@@ -767,24 +804,21 @@ export default function CreateFlyerPage() {
   const handleSaveFlyer = (flyerData: Partial<FlyerData>) => {
     const newFlyer = flyerData as FlyerData
     setSavedFlyers((prev) => [newFlyer, ...prev])
+    setCurrentView("initial")
   }
 
   const handleEditFlyer = (flyer: FlyerData) => {
     setEditingFlyer(flyer)
-    // Scroll to the appropriate form section
-    const element =
-      flyer.type === "custom"
-        ? document.querySelector('[data-section="custom"]')
-        : document.querySelector("#auto-generate")
-    element?.scrollIntoView({ behavior: "smooth" })
+    setCurrentView(flyer.type === "custom" ? "upload" : "generate")
   }
 
   const handleDeleteFlyer = (id: string) => {
     setSavedFlyers((prev) => prev.filter((flyer) => flyer.id !== id))
   }
 
-  const scrollToAutoGenerate = () => {
-    document.getElementById("auto-generate")?.scrollIntoView({ behavior: "smooth" })
+  const handleBackToInitial = () => {
+    setCurrentView("initial")
+    setEditingFlyer(null)
   }
 
   return (
@@ -795,6 +829,13 @@ export default function CreateFlyerPage() {
         <main className="container max-w-6xl mx-auto px-4 py-8">
           {/* Page Header */}
           <div className="text-center mb-12">
+            <Link
+              href="/"
+              className="inline-flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors mb-4"
+            >
+              <ArrowLeft className="h-4 w-4" />
+              Back to Home
+            </Link>
             <h1 className="text-4xl md:text-5xl font-bold mb-4 font-serif">Create and Share Your Event Flyers</h1>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
               Design beautiful, professional flyers for your church events in minutes. Choose from our templates or
@@ -802,44 +843,19 @@ export default function CreateFlyerPage() {
             </p>
           </div>
 
-          {/* Top Action Cards */}
-          <div className="grid md:grid-cols-2 gap-6 mb-12">
-            <Card className="cursor-pointer hover:shadow-lg transition-all duration-300 group" data-section="custom">
-              <CardHeader className="text-center pb-4">
-                <div className="mx-auto mb-4 p-4 rounded-full bg-primary/20 group-hover:bg-primary/30 transition-all duration-300 w-fit">
-                  <Upload className="h-8 w-8 text-primary" />
-                </div>
-                <CardTitle className="text-xl mb-2">Upload Your Own Design</CardTitle>
-                <CardDescription>Have a custom design? Upload it and add your event details</CardDescription>
-              </CardHeader>
-            </Card>
+          {/* Dynamic Content Based on Current View */}
+          {currentView === "initial" && (
+            <>
+              <InitialSelection onSelect={setCurrentView} />
+              <SavedDesigns flyers={savedFlyers} onEdit={handleEditFlyer} onDelete={handleDeleteFlyer} />
+            </>
+          )}
 
-            <Card
-              className="cursor-pointer hover:shadow-lg transition-all duration-300 group"
-              onClick={scrollToAutoGenerate}
-            >
-              <CardHeader className="text-center pb-4">
-                <div className="mx-auto mb-4 p-4 rounded-full bg-secondary/20 group-hover:bg-secondary/30 transition-all duration-300 w-fit">
-                  <Wand2 className="h-8 w-8 text-secondary" />
-                </div>
-                <CardTitle className="text-xl mb-2">Auto-Generate a Flyer</CardTitle>
-                <CardDescription>Use our smart builder to create professional flyers automatically</CardDescription>
-              </CardHeader>
-            </Card>
-          </div>
+          {currentView === "upload" && <CustomUploadSection onUpload={handleSaveFlyer} onBack={handleBackToInitial} />}
 
-          {/* Custom Upload Section */}
-          <div className="mb-12" data-section="custom">
-            <CustomUploadSection onUpload={handleSaveFlyer} />
-          </div>
-
-          {/* Auto-Generate Section */}
-          <div className="mb-12">
-            <AutoGenerateSection onGenerate={handleSaveFlyer} />
-          </div>
-
-          {/* Saved Designs Section */}
-          <SavedDesigns flyers={savedFlyers} onEdit={handleEditFlyer} onDelete={handleDeleteFlyer} />
+          {currentView === "generate" && (
+            <AutoGenerateSection onGenerate={handleSaveFlyer} onBack={handleBackToInitial} />
+          )}
         </main>
 
         <Footer />

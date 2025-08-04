@@ -42,34 +42,34 @@ interface Suggestion {
 }
 
 // Navbar Component
-function Navbar() {
+export function Navbar() {
   const [isOpen, setIsOpen] = useState(false)
   const { theme, setTheme } = useTheme()
 
   return (
     <nav className="sticky top-0 z-50 w-full border-b border-border bg-background/98 backdrop-blur-md supports-[backdrop-filter]:bg-background/95 shadow-sm">
       <div className="container flex h-16 items-center justify-between px-4">
-        <div className="flex items-center space-x-2">
+        <Link href="/" className="flex items-center space-x-2">
           <Church className="h-8 w-8 text-primary drop-shadow-sm" />
           <span className="text-xl font-bold text-foreground">34th Region</span>
-        </div>
+        </Link>
 
         {/* Desktop Navigation */}
         <div className="hidden md:flex items-center space-x-6">
           <Link
-            href="#"
+            href="/"
             className="text-sm font-medium text-foreground hover:text-primary transition-colors duration-200"
           >
             Home
           </Link>
           <Link
-            href="#"
+            href="/about"
             className="text-sm font-medium text-foreground hover:text-primary transition-colors duration-200"
           >
             About
           </Link>
           <Link
-            href="#"
+            href="/tools"
             className="text-sm font-medium text-foreground hover:text-primary transition-colors duration-200"
           >
             Tools
@@ -109,13 +109,13 @@ function Navbar() {
       {isOpen && (
         <div className="md:hidden border-t bg-background">
           <div className="container py-4 space-y-3">
-            <Link href="#" className="block text-sm font-medium hover:text-primary transition-colors">
+            <Link href="/" className="block text-sm font-medium hover:text-primary transition-colors">
               Home
             </Link>
-            <Link href="#" className="block text-sm font-medium hover:text-primary transition-colors">
+            <Link href="/about" className="block text-sm font-medium hover:text-primary transition-colors">
               About
             </Link>
-            <Link href="#" className="block text-sm font-medium hover:text-primary transition-colors">
+            <Link href="/tools" className="block text-sm font-medium hover:text-primary transition-colors">
               Tools
             </Link>
             <Link href="#" className="block text-sm font-medium hover:text-primary transition-colors">
@@ -228,7 +228,6 @@ function HeroSection() {
 
   const handleSearch = () => {
     if (searchQuery.trim()) {
-      // Simulate search failure for demo
       setTimeout(() => {
         setShowRegistration(true)
       }, 1000)
@@ -303,18 +302,21 @@ function FeatureCards() {
       title: "Publish Your Events for Free",
       description: "Create beautiful event flyers and reach your community",
       action: "Create Event",
+      href: "/create-flyer",
     },
     {
       icon: Church,
       title: "Register Your Church for Free",
       description: "Join our growing network of faith communities",
       action: "Register Church",
+      href: "#",
     },
     {
       icon: Send,
       title: "Evangelize with Bulk Messages for Free",
       description: "Reach hearts with personalized outreach campaigns",
       action: "Start Outreach",
+      href: "#",
     },
   ]
 
@@ -343,12 +345,14 @@ function FeatureCards() {
                 <CardDescription className="text-base">{feature.description}</CardDescription>
               </CardHeader>
               <CardContent className="pt-0 text-center">
-                <Button
-                  variant="outline"
-                  className="group-hover:bg-primary group-hover:text-primary-foreground transition-all duration-300 border-primary/50 hover:border-primary shadow-md bg-transparent"
-                >
-                  {feature.action}
-                </Button>
+                <Link href={feature.href}>
+                  <Button
+                    variant="outline"
+                    className="group-hover:bg-primary group-hover:text-primary-foreground transition-all duration-300 border-primary/50 hover:border-primary shadow-md bg-transparent"
+                  >
+                    {feature.action}
+                  </Button>
+                </Link>
               </CardContent>
             </Card>
           ))}
@@ -509,7 +513,7 @@ function FeedbackSection() {
 }
 
 // Footer
-function Footer() {
+export function Footer() {
   return (
     <footer className="border-t bg-muted/30 py-12 px-4">
       <div className="container max-w-6xl mx-auto">
